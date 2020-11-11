@@ -54,12 +54,11 @@ go install google.golang.org/protobuf/cmd/protoc-gen-go
 2. Kompile proto file
    ```
    //Format 
-   protoc --go_out=paths=source_relative:. path/to/file.proto
-   //Result
-   path/to/file.pb.go
+   protoc --proto_path=proto <path protofile> --go_out=plugins=grpc:<path source code>
+  
 
    //Example
-   protoc --go_out=paths=source_relative:. ./addressbook/addressbook.proto
+   protoc --proto_path=proto /proto/*.proto --go_out=plugins=grpc:pb
    ```
 
 3. Implementasi Code
