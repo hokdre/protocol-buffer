@@ -1,92 +1,52 @@
 # protocol-buffer
 
-## install kompiler
+## Final Objective:
+membuat modeling data inventory komputer
+
+## Poin :
+1. Mendefinisikan Skema
+2. Field : Field rule, Field Types, Field Number
+3. Advance field type : Enum, Nested
+4. Multifile .proto
+   
+## install compiler
 ```
 brew install protobuf
 
 go install google.golang.org/protobuf/cmd/protoc-gen-go
 ```
 
-1. ## mendefinisikan sebuah message (skema)
-    ```
-        // FORMAT 
-        message <Name> {
-            <Field-rule> <Field-Types> <name> = <Field-Number>; // field number is must be unique
-        }
+## compile 
+```
+//syntax compile
+protoc -I=<source folder proto> --go_out=<source destination > --go_opt=paths=source_relative file.proto
 
-        //EXAMPLE
-        message Person {
-            string name = 1;
-            int32 id = 2;
-            string email = 3;
-            
-            //Enum : deklarasi bisa didalam ataupun diluar
-            enum PhoneType {
-                MOBILE = 0; // enum harus dimulai dari 0
-                HOME = 1;
-                WORK = 2;
-            }
-            
-            //Nested : deklarasi bisa didalam ataupun diluar
-            message PhoneNumber {
-                string number = 1;
-                PhoneType type = 2; //menggunakan PhoneType(enum)
-            }
-            //menggunakan PhoneNumber type (nested)
-            //menggunakan repeated rule, bersifat seperti sebuah array
-            repeated PhoneNumber phones = 4;
-        }
+//Example
+cd /proto
+protoc -I=. --go_out=../pb --go_opt=paths=source_relative todo.proto
+```
 
-        // mendefinisikan lebih dari satu message dalam 1 proto file
-        message AddressBook {
-            repeated Person person = 1;
-        }
-    ``` 
-    ### Field Konfigurasi
-   1. field types
-      1. Scalar 
-      2. Composite (nested message)
-      3. Enum (must start from 0 index)
-   2. field number (Must be unique start from 1)
-   3. field rule
-      1. Singular
-      2. Repeated (Array)
-   
-2. Kompile proto file
-   ```
-   //Format 
-   protoc --proto_path=proto <path protofile> --go_out=plugins=grpc:<path source code>
-  
+1. ## **mendefinisikan sebuah message (skema)**
+```
+    // FORMAT 
+    message <Name> {
+        /**
+         * field tag harus unik dan merupakan integer 
+         * field tag yang dapat digunakan : 1 - 2^29-1
+         * field tag yang tidak dapat digunakan : 19000 - 19999 
+        */
+        <Field-rule> <Field-Types> <name> = <field_tag>;
+        ...
+    }
 
-   //Example
-   protoc --proto_path=proto /proto/*.proto --go_out=plugins=grpc:pb
-   ```
-
-3. Implementasi Code
-   1. Membuat message
-      ```
-      // encode
-        book := &addressbook.AddressBook{}
-        book.Person = []*addressbook.Person{
-            &addressbook.Person{
-                Name:  "andre",
-                Id:    1,
-                Email: "hokdre@gmail.com",
-            },
-        }
-        fmt.Println(book)
-        out, err := proto.Marshal(book)
-        if err != nil {
-            fmt.Printf("err marshaling : %s", err)
-        }
-      ``` 
-   2. Membaca message
-      ```
-      // decode
-        decoded := &addressbook.AddressBook{}
-        err = proto.Unmarshal(out, decoded)
-        if err != nil {
-            fmt.Printf("err unmarshaling : %s", err)
-        }
-        fmt.Println(decoded)
-      ``` 
+    //Example 
+    message CPU {
+        string brand = 1;
+        string name = 2;
+        unit32 number_cores = 5;
+        uint32 numbers_threads = 5;
+        double min_ghz = 5;
+        double max_ghz = 6;
+    }
+     
+``` 
